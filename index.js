@@ -47,6 +47,41 @@ var jcbPrefixList = new Array(
 
 var voyagerPrefixList = new Array("8699");
 
+var schemes = {
+    "VISA": {
+        prefixList: visaPrefixList,
+        digitCount: 16
+    },
+    "MasterCard": {
+        prefixList: mastercardPrefixList,
+        digitCount: 16
+    },
+    "Amex": {
+        prefixList: amexPrefixList,
+        digitCount: 15
+    },
+    "Diners": {
+        prefixList: dinersPrefixList,
+        digitCount: 16
+    },
+    "Discover": {
+        prefixList: discoverPrefixList,
+        digitCount: 16
+    },
+    "EnRoute": {
+        prefixList: enRoutePrefixList,
+        digitCount: 16
+    },
+    "JCB": {
+        prefixList: jcbPrefixList,
+        digitCount: 16
+    },
+    "Voyager": {
+        prefixList: voyagerPrefixList,
+        digitCount: 16
+    }
+};
+
 /**
  * Revert a String
  * @param  {String} str
@@ -139,64 +174,25 @@ function credit_card_number(prefixList, length, howMany) {
  * Supported Card Schemes
  * @type {Array}
  */
-module.exports.Schemes = {
-    "VISA": {
-        prefixList: visaPrefixList,
-        digitCount: 16
-    },
-    "MasterCard": {
-        prefixList: mastercardPrefixList,
-        digitCount: 16
-    },
-    "Amex": {
-        prefixList: amexPrefixList,
-        digitCount: 15
-    },
-    "Diners": {
-        prefixList: dinersPrefixList,
-        digitCount: 16
-    },
-    "Discover": {
-        prefixList: discoverPrefixList,
-        digitCount: 16
-    },
-    "EnRoute": {
-        prefixList: enRoutePrefixList,
-        digitCount: 16
-    },
-    "JCB": {
-        prefixList: jcbPrefixList,
-        digitCount: 16
-    },
-    "Voyager": {
-        prefixList: voyagerPrefixList,
-        digitCount: 16
-    }
-}
+module.exports = {
+    Schemes: schemes,
 
-/**
- * The entry-point function
- * @param {String} CardScheme  The Card Scheme
- * @param {Number} [howMany]   Defaults to 1
- * @param {Number} [randomGen] Pseudo Random Generator. Must generate a random number between 0 an 1
- * @return {String}
- */
-module.exports.GenCC = function(CardScheme, howMany, randomGen){
-    pseudoRandom = randomGen || pseudoRandom;
-    var amount = howMany || 1;
-    // Try to get configs to the selected Scheme
-    if (typeof module.exports.Schemes[CardScheme] != 'undefined') {
-        return credit_card_number(
-            module.exports.Schemes[CardScheme].prefixList,
-            module.exports.Schemes[CardScheme].digitCount,
-            amount
-        );
+    /**
+     * The entry-point function
+     * @param {String} CardScheme  The Card Scheme
+     * @param {Number} [howMany]   Defaults to 1
+     * @param {Number} [randomGen] Pseudo Random Generator. Must generate a random number between 0 an 1
+     * @return {String}
+     */
+    GenCC: function(CardScheme, howMany, randomGen){
+        pseudoRandom = randomGen || pseudoRandom;
+        var amount = howMany || 1;
+        
+        // Defaults to MasterCard
+        if (!schemes[CardScheme]) {
+            CardScheme = "MasterCard";
+        }
+        
+        return credit_card_number(schemes[CardScheme].prefixList, schemes[CardScheme].digitCount, amount);
     }
-    else { // Defaults to MasterCard
-        return credit_card_number(
-            module.exports.Schemes["MasterCard"].prefixList,
-            module.exports.Schemes["MasterCard"].digitCount,
-            amount
-        );
-    }
-}
+};
